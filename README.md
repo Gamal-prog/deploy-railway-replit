@@ -38,7 +38,8 @@ python manage.py runserver
    - `DJANGO_SUPERUSER_PASSWORD`
    - `DJANGO_SUPERUSER_EMAIL`
 3. Если нужен Postgres, добавьте Railway Postgres. Приложение понимает и `DATABASE_URL`, и Railway-переменные `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `PGHOST`, `PGPORT`.
-4. Railway запустит команду из `Procfile` или Dockerfile.
+4. Railway запустит `sh bin/start` из `railway.json`.
+5. В логах должна появиться строка `Starting gunicorn on 0.0.0.0:8000`. Target port в Networking должен совпадать с этим портом.
 
 ## Replit
 
