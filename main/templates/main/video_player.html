@@ -1,0 +1,51 @@
+{% extends "main/base.html" %}
+
+{% block title %}{{ video.title }} · {{ course.title }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumbs" aria-label="Навигационная цепочка">
+    <a href="{% url 'main:course_list' %}">Курсы</a>
+    <span>/</span>
+    <a href="{% url 'main:course_detail' course.pk %}">{{ course.title }}</a>
+    <span>/</span>
+    <span>{{ video.title }}</span>
+</nav>
+
+<section class="player-layout">
+    <article class="player-main">
+        <div class="player-frame">
+            <iframe
+                src="{{ video.bunny_embed_url }}"
+                loading="lazy"
+                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                allowfullscreen>
+            </iframe>
+        </div>
+        <div class="player-copy">
+            <p class="eyebrow">{{ course.title }}</p>
+            <h1>{{ video.title }}</h1>
+            {% if video.description %}
+                <p>{{ video.description }}</p>
+            {% endif %}
+        </div>
+    </article>
+
+    <aside class="playlist" aria-label="Список видео">
+        <div class="section-title">
+            <h2>Лекции</h2>
+            <span>{{ videos|length }}</span>
+        </div>
+        <div class="video-stack">
+            {% for item in videos %}
+                <a class="video-row {% if item.pk == video.pk %}is-active{% endif %}" href="{% url 'main:video_player' course.pk item.pk %}">
+                    <span class="video-index">{{ forloop.counter|stringformat:"02d" }}</span>
+                    <span class="video-row__main">
+                        <strong>{{ item.title }}</strong>
+                        {% if item.duration_label %}<small>{{ item.duration_label }}</small>{% endif %}
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+    </aside>
+</section>
+{% endblock %}

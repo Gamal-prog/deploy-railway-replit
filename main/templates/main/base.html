@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}lectureLib{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    <script src="{% static 'js/site.js' %}" defer></script>
+</head>
+<body>
+    <header class="app-header">
+        <a class="brand" href="{% url 'main:course_list' %}" aria-label="lectureLib">
+            <span>.</span>lectureLib
+        </a>
+        <nav class="top-nav" aria-label="Навигация">
+            <a href="{% url 'main:course_list' %}">Курсы</a>
+            <a href="/admin/">Админка</a>
+            <button class="theme-button" type="button" data-theme-toggle aria-label="Переключить тему">
+                <span data-theme-icon>☾</span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-footer">
+        <p>IUCA lectureLib · демонстрационная библиотека видеолекций</p>
+    </footer>
+</body>
+</html>

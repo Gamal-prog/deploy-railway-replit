@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Node.js / build artifacts
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+build/
+.vite/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# API query to get a link
+api.http
+
+# Local writing notes
+*.md
+!README.md

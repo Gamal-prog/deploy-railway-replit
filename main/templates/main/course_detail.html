@@ -1,0 +1,59 @@
+{% extends "main/base.html" %}
+
+{% block title %}{{ course.title }} · lectureLib{% endblock %}
+
+{% block content %}
+<nav class="breadcrumbs" aria-label="Навигационная цепочка">
+    <a href="{% url 'main:course_list' %}">Курсы</a>
+    <span>/</span>
+    <span>{{ course.title }}</span>
+</nav>
+
+<section class="course-detail">
+    <div>
+        <p class="eyebrow">{% if course.code %}{{ course.code }}{% else %}Курс{% endif %}</p>
+        <h1>{{ course.title }}</h1>
+        {% if course.instructor %}
+            <p class="instructor">Преподаватель: {{ course.instructor }}</p>
+        {% endif %}
+        {% if course.description %}
+            <p class="lead">{{ course.description }}</p>
+        {% elif course.summary %}
+            <p class="lead">{{ course.summary }}</p>
+        {% endif %}
+    </div>
+    {% if featured_video %}
+        <a class="watch-panel" href="{% url 'main:video_player' course.pk featured_video.pk %}">
+            <span class="play-mark">▶</span>
+            <strong>Начать просмотр</strong>
+            <small>{{ featured_video.title }}</small>
+        </a>
+    {% endif %}
+</section>
+
+<section class="video-list" aria-label="Видео курса">
+    <div class="section-title">
+        <h2>Видео курса</h2>
+        <span>{{ videos|length }} материалов</span>
+    </div>
+    {% if videos %}
+        <div class="video-stack">
+            {% for video in videos %}
+                <a class="video-row" href="{% url 'main:video_player' course.pk video.pk %}">
+                    <span class="video-index">{{ forloop.counter|stringformat:"02d" }}</span>
+                    <span class="video-row__main">
+                        <strong>{{ video.title }}</strong>
+                        {% if video.description %}<small>{{ video.description|truncatechars:120 }}</small>{% endif %}
+                    </span>
+                    {% if video.duration_label %}<span class="duration">{{ video.duration_label }}</span>{% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state empty-state--compact">
+            <h2>Видео пока не добавлены</h2>
+            <p>Свяжите Bunny embed URL с этим курсом через админку.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
