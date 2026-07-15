@@ -1,10 +1,6 @@
 (() => {
     const root = document.documentElement;
-    const playerStorageKey = "dark-mode";
-    const portalStorageKey = "lecturelib-theme";
-    const allowedPreferences = ["on", "off", "system"];
-
-    const prefersDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const storageKey = "lecturelib-theme";
 
     const getStoredValue = (key) => {
         try {
@@ -14,72 +10,64 @@
         }
     };
 
+    const getStoredTheme = () => {
+        const storedTheme = getStoredValue(storageKey);
+        return storedTheme === "dark" || storedTheme === "light" ? storedTheme : "light";
+    };
+
     const getStoredPreference = () => {
-        const playerPreference = getStoredValue(playerStorageKey);
-        if (playerPreference === "system") return "system";
-
-        const portalPreference = getStoredValue(portalStorageKey);
-        if (portalPreference === "dark") return "on";
-        if (portalPreference === "light") return "off";
-
-        if (allowedPreferences.includes(playerPreference)) {
-            return playerPreference;
-        }
-
-        return "system";
+        return getStoredTheme() === "dark" ? "on" : "off";
     };
 
-    const isDarkPreference = (preference) => {
-        if (preference === "system") {
-            return prefersDark();
-        }
-        return preference === "on";
-    };
-
-    const persistPreference = (preference, isDarkModeActive) => {
+    const persistTheme = (theme) => {
         try {
-            localStorage.setItem(playerStorageKey, preference);
-            if (preference === "system") {
-                localStorage.removeItem(portalStorageKey);
-            } else {
-                localStorage.setItem(portalStorageKey, isDarkModeActive ? "dark" : "light");
-            }
+            localStorage.setItem(storageKey, theme);
+            localStorage.removeItem("dark-mode");
         } catch (error) {
             // Theme persistence is optional.
         }
     };
 
-    const applyThemePreference = (preference, options = {}) => {
-        const nextPreference = allowedPreferences.includes(preference) ? preference : "system";
-        const isDarkModeActive = isDarkPreference(nextPreference);
+    const applyTheme = (theme, options = {}) => {
+        const nextTheme = theme === "dark" ? "dark" : "light";
+        const isDarkModeActive = nextTheme === "dark";
 
         if (options.persist !== false) {
-            persistPreference(nextPreference, isDarkModeActive);
+            persistTheme(nextTheme);
         }
 
         root.classList.toggle("dark", isDarkModeActive);
         root.classList.toggle("initial-dark", isDarkModeActive);
-        root.dataset.theme = isDarkModeActive ? "dark" : "light";
+        root.dataset.theme = nextTheme;
 
         window.dispatchEvent(
             new CustomEvent("lecturelib:theme-change", {
                 detail: {
-                    preference: nextPreference,
+                    preference: nextTheme === "dark" ? "on" : "off",
                     isDarkModeActive,
+                    theme: nextTheme,
                 },
             })
         );
     };
 
+    const applyThemePreference = (preference, options = {}) => {
+        applyTheme(preference === "on" ? "dark" : "light", options);
+    };
+
     const toggleThemePreference = () => {
-        applyThemePreference(isDarkPreference(getStoredPreference()) ? "off" : "on");
+        applyTheme(root.classList.contains("dark") ? "light" : "dark");
     };
 
     window.lectureLibTheme = {
+        getStoredTheme,
         getStoredPreference,
+        applyTheme,
         applyThemePreference,
         toggleThemePreference,
-        isDarkPreference,
+        isDarkPreference(preference) {
+            return preference === "on";
+        },
     };
 
     document.addEventListener("click", (event) => {
@@ -101,9 +89,8 @@ document.addEventListener("alpine:init", () => {
     const theme = window.lectureLibTheme;
 
     Alpine.store("theme", {
-        darkModePreference: "system",
+        darkModePreference: "off",
         isDarkModeActive: false,
-        mediaQuery: null,
         init() {
             this.darkModePreference = theme.getStoredPreference();
             this.applyDarkMode();
@@ -111,18 +98,6 @@ document.addEventListener("alpine:init", () => {
                 this.darkModePreference = event.detail.preference;
                 this.isDarkModeActive = event.detail.isDarkModeActive;
             });
-            this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-            const onSystemThemeChange = () => {
-                if (this.darkModePreference === "system") {
-                    this.applyDarkMode();
-                }
-            };
-
-            if (typeof this.mediaQuery.addEventListener === "function") {
-                this.mediaQuery.addEventListener("change", onSystemThemeChange);
-            } else {
-                this.mediaQuery.addListener(onSystemThemeChange);
-            }
         },
         isDark() {
             return theme.isDarkPreference(this.darkModePreference);
@@ -141,8 +116,7 @@ document.addEventListener("alpine:init", () => {
         },
         currentThemeLabel() {
             if (this.darkModePreference === "on") return "Тёмная";
-            if (this.darkModePreference === "off") return "Светлая";
-            return "Системная";
+            return "Светлая";
         },
         isSelected(value) {
             return this.darkModePreference === value;

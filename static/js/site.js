@@ -1,11 +1,9 @@
 (() => {
     const root = document.documentElement;
     const storageKey = "lecturelib-theme";
-    const playerStorageKey = "dark-mode";
     const button = document.querySelector("[data-theme-toggle]");
     const icon = document.querySelector("[data-theme-icon]");
 
-    const prefersDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
     const getStoredValue = (key) => {
         try {
             return localStorage.getItem(key);
@@ -15,21 +13,15 @@
     };
 
     const storedTheme = () => {
-        const playerTheme = getStoredValue(playerStorageKey);
-        if (playerTheme === "system") return prefersDark() ? "dark" : "light";
-
         const portalTheme = getStoredValue(storageKey);
         if (portalTheme === "dark" || portalTheme === "light") {
             return portalTheme;
         }
 
-        if (playerTheme === "on") return "dark";
-        if (playerTheme === "off") return "light";
-
         return null;
     };
 
-    const resolveTheme = () => storedTheme() || (prefersDark() ? "dark" : "light");
+    const resolveTheme = () => storedTheme() || "light";
 
     const applyTheme = (theme) => {
         root.dataset.theme = theme;
@@ -42,7 +34,7 @@
     const persistTheme = (theme) => {
         try {
             localStorage.setItem(storageKey, theme);
-            localStorage.setItem(playerStorageKey, theme === "dark" ? "on" : "off");
+            localStorage.removeItem("dark-mode");
         } catch (error) {
             // Theme persistence is optional.
         }

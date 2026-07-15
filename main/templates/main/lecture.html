@@ -9,10 +9,7 @@
     <script>
         (() => {
             const root = document.documentElement;
-            const playerStorageKey = 'dark-mode';
             const portalStorageKey = 'lecturelib-theme';
-            const allowedPreferences = ['on', 'off', 'system'];
-            const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
             const storedValue = (key) => {
                 try {
                     return localStorage.getItem(key);
@@ -20,22 +17,8 @@
                     return null;
                 }
             };
-            const loadPreference = () => {
-                const playerPreference = storedValue(playerStorageKey);
-                if (playerPreference === 'system') return 'system';
-
-                const portalPreference = storedValue(portalStorageKey);
-                if (portalPreference === 'dark') return 'on';
-                if (portalPreference === 'light') return 'off';
-
-                if (allowedPreferences.includes(playerPreference)) {
-                    return playerPreference;
-                }
-
-                return 'system';
-            };
-            const darkModePreference = loadPreference();
-            const useDarkTheme = darkModePreference === 'system' ? prefersDark() : darkModePreference === 'on';
+            const storedTheme = storedValue(portalStorageKey);
+            const useDarkTheme = storedTheme === 'dark';
 
             root.classList.toggle('initial-dark', useDarkTheme);
             root.classList.toggle('dark', useDarkTheme);
@@ -62,7 +45,7 @@
         window.tailwind.config = { darkMode: 'class' };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="{% static 'js/lecture.js' %}?v=theme-toggle"></script>
+    <script defer src="{% static 'js/lecture.js' %}?v=theme-single-key"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.9/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
 </head>
