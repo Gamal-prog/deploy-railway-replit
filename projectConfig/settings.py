@@ -148,3 +148,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+BUNNY_STREAM_LIBRARY_ID = 703470
+BUNNY_STREAM_API_KEY = os.environ.get("BUNNY_STREAM_API_KEY", "")
+BUNNY_STREAM_API_TIMEOUT = int(os.environ.get("BUNNY_STREAM_API_TIMEOUT", "8"))

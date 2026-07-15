@@ -1,48 +1,69 @@
 {% extends "main/base.html" %}
 
-{% block title %}Курсы · lectureLib{% endblock %}
+{% block title %}Портал · lectureLib{% endblock %}
 
 {% block content %}
-<section class="page-heading">
-    <p class="eyebrow">Видеолекции</p>
-    <h1>Каталог курсов</h1>
-    <p class="lead">Выберите курс, чтобы открыть связанные с ним материалы и перейти к просмотру лекций.</p>
-</section>
-
-{% if courses %}
-    <section class="course-grid" aria-label="Список курсов">
-        {% for course in courses %}
-            <article class="course-card">
-                {% if course.cover_url %}
-                    <img class="course-cover" src="{{ course.cover_url }}" alt="">
-                {% else %}
-                    <div class="course-cover course-cover--placeholder">
-                        <span>{{ course.title|first }}</span>
-                    </div>
-                {% endif %}
-                <div class="course-card__body">
-                    <div class="course-meta">
-                        {% if course.code %}<span>{{ course.code }}</span>{% endif %}
-                        <span>{{ course.published_video_count }} видео</span>
-                    </div>
-                    <h2>{{ course.title }}</h2>
-                    {% if course.summary %}
-                        <p>{{ course.summary }}</p>
-                    {% elif course.description %}
-                        <p>{{ course.description|truncatechars:150 }}</p>
-                    {% else %}
-                        <p>Материалы курса доступны для демонстрационного просмотра.</p>
-                    {% endif %}
-                    <a class="primary-link" href="{% url 'main:course_detail' course.pk %}">Открыть курс</a>
+<section class="portal-layout">
+    <aside class="portal-sidebar" aria-label="Панель портала">
+        <div class="sidebar-section">
+            <p class="eyebrow">MVP portal</p>
+            <h2>Демо-доступ</h2>
+            <p>Главная имитирует внешний портал. Кнопка курса ведет на страницу, которая выглядит как результат API-запроса на доступ к видео.</p>
+        </div>
+        <div class="sidebar-section">
+            <h3>Состояние</h3>
+            <dl class="sidebar-stats">
+                <div>
+                    <dt>Курсы</dt>
+                    <dd>{{ courses|length }}</dd>
                 </div>
-            </article>
-        {% endfor %}
+                <div>
+                    <dt>Видео</dt>
+                    <dd>{{ total_videos }}</dd>
+                </div>
+                <div>
+                    <dt>Источник</dt>
+                    <dd>Bunny Stream</dd>
+                </div>
+            </dl>
+        </div>
+        <div class="sidebar-section">
+            <h3>Как показать</h3>
+            <ol class="sidebar-steps">
+                <li>Откройте портал.</li>
+                <li>Выберите курс из списка.</li>
+                <li>Страница курса сразу открывает плеер.</li>
+            </ol>
+        </div>
+    </aside>
+
+    <section class="portal-main">
+        <div class="page-heading">
+            <p class="eyebrow">Видеолекции</p>
+            <h1>Доступные курсы</h1>
+            <p class="lead">Выберите курс, чтобы открыть страницу просмотра. Для MVP переход имитирует получение ссылки от внешнего портала.</p>
+        </div>
+
+        {% if courses %}
+            <div class="course-list" aria-label="Список курсов">
+                {% for course in courses %}
+                    <article class="course-list-row">
+                        <div class="course-list-row__index">{{ forloop.counter|stringformat:"02d" }}</div>
+                        <div class="course-list-row__body">
+                            <h2>{{ course.name }}</h2>
+                            <p>{{ course.video_count }} видео связано с курсом</p>
+                        </div>
+                        <a class="primary-link" href="{% url 'main:course_player' course.pk %}">Открыть плеер</a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <section class="empty-state">
+                <h2>Курсы пока не добавлены</h2>
+                <p>Добавьте курс и Bunny video ID через Django admin.</p>
+                <a class="primary-link" href="/admin/">Открыть админку</a>
+            </section>
+        {% endif %}
     </section>
-{% else %}
-    <section class="empty-state">
-        <h2>Курсы пока не добавлены</h2>
-        <p>Добавьте первый курс и Bunny-видео через Django admin.</p>
-        <a class="primary-link" href="/admin/">Открыть админку</a>
-    </section>
-{% endif %}
+</section>
 {% endblock %}

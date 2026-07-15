@@ -159,12 +159,6 @@ h2 {
     font-size: clamp(1rem, 2vw, 1.15rem);
 }
 
-.course-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
-}
-
 .course-card,
 .watch-panel,
 .video-row,
@@ -179,6 +173,109 @@ h2 {
 
 .course-card {
     overflow: hidden;
+}
+
+.portal-layout {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.portal-sidebar {
+    position: sticky;
+    top: 92px;
+    display: grid;
+    gap: 14px;
+}
+
+.sidebar-section,
+.course-list-row {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.sidebar-section {
+    padding: 18px;
+}
+
+.sidebar-section h2,
+.sidebar-section h3 {
+    margin-bottom: 8px;
+}
+
+.sidebar-section p,
+.sidebar-steps {
+    margin-bottom: 0;
+    color: var(--muted);
+}
+
+.sidebar-stats {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+}
+
+.sidebar-stats div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.sidebar-stats div:last-child {
+    border-bottom: 0;
+}
+
+.sidebar-stats dt {
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.sidebar-stats dd {
+    margin: 0;
+    font-weight: 800;
+}
+
+.sidebar-steps {
+    padding-left: 20px;
+}
+
+.course-list {
+    display: grid;
+    gap: 12px;
+}
+
+.course-list-row {
+    min-height: 96px;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+}
+
+.course-list-row__index {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-weight: 800;
+}
+
+.course-list-row__body h2 {
+    margin-bottom: 4px;
+}
+
+.course-list-row__body p {
+    margin-bottom: 0;
+    color: var(--muted);
 }
 
 .course-cover {
@@ -255,11 +352,6 @@ h2 {
     grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
     gap: 22px;
     align-items: stretch;
-}
-
-.instructor {
-    color: var(--muted);
-    font-weight: 700;
 }
 
 .watch-panel {
@@ -421,8 +513,14 @@ h2 {
     }
 
     .course-detail,
+    .portal-layout,
     .player-layout {
         grid-template-columns: 1fr;
+    }
+
+    .portal-sidebar {
+        position: static;
+        order: 2;
     }
 
     .playlist {
@@ -442,6 +540,15 @@ h2 {
 
     .video-row {
         grid-template-columns: 42px minmax(0, 1fr);
+    }
+
+    .course-list-row {
+        grid-template-columns: 48px minmax(0, 1fr);
+    }
+
+    .course-list-row .primary-link {
+        grid-column: 1 / -1;
+        width: 100%;
     }
 
     .duration {

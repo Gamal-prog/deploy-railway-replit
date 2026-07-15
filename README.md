@@ -5,8 +5,9 @@
 ## Что внутри
 
 - каталог курсов;
-- страница курса со списком видео;
-- страница просмотра с Bunny embed player;
+- главная страница-портал со списком курсов;
+- `/courses/<id>/` сразу открывает страницу просмотра, имитируя ответ внешнего API;
+- страница просмотра с Bunny embed player и метаданными из Bunny Stream API;
 - Django admin для добавления курсов и видео;
 - SQLite по умолчанию;
 - автоматическая поддержка Postgres через `DATABASE_URL`;
@@ -34,6 +35,7 @@ python manage.py runserver
    - `DEBUG=False`
    - `DJANGO_ALLOWED_HOSTS=.up.railway.app,.railway.app`
    - `CSRF_TRUSTED_ORIGINS=https://*.up.railway.app,https://*.railway.app`
+   - `BUNNY_STREAM_API_KEY`
    - `DJANGO_SUPERUSER_USERNAME`
    - `DJANGO_SUPERUSER_PASSWORD`
    - `DJANGO_SUPERUSER_EMAIL`
@@ -58,4 +60,4 @@ python manage.py collectstatic --noinput
 gunicorn projectConfig.wsgi:application --bind 0.0.0.0:$PORT
 ```
 
-Видео не проксируются через Django: в админке хранится Bunny embed URL, а браузер пользователя загружает плеер напрямую с Bunny.
+Видео не проксируются через Django: в админке хранится Bunny video ID, Django получает метаданные через Bunny Stream API, а браузер пользователя загружает плеер напрямую с Bunny.
