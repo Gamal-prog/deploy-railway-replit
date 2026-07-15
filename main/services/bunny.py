@@ -29,9 +29,9 @@ class BunnyAPIError(Exception):
 
 def _player_embed_url(video_id: str) -> str:
     return (
-        f"https://iframe.mediadelivery.net/embed/"
+        f"https://player.mediadelivery.net/embed/"
         f"{settings.BUNNY_STREAM_LIBRARY_ID}/{video_id}"
-        "?autoplay=false&loop=false&muted=false&preload=true&responsive=true"
+        "?autoplay=true&loop=false&muted=true&preload=true&responsive=true"
     )
 
 

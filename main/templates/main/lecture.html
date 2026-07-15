@@ -158,10 +158,11 @@
                 {% if initial_lecture %}
                 <iframe class="aspect-video bg-black select-none  mb-6 w-full rounded-lg shadow-md md:shadow  md:border-t-2 border-blue-500  outline-[1.6px] outline-offset outline-blue-500 md:outline-none md:outline-offset-0  dark:shadow-black/30 dark:border-blue-400" 
                     :src="currentVideo" 
+                    loading="lazy"
                     frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen;" 
                     referrerpolicy="strict-origin-when-cross-origin" 
-                    allowfullscreen
+                    allowfullscreen="true"
                 ></iframe>
                 {% else %}
                 <section class="aspect-video bg-white dark:bg-zinc-800 select-none mb-6 w-full rounded-lg shadow-md md:shadow md:border-t-2 border-blue-500 outline-[1.6px] outline-offset outline-blue-500 md:outline-none md:outline-offset-0 dark:shadow-black/30 dark:border-blue-400 flex items-center justify-center text-center p-8">
