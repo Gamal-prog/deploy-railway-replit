@@ -164,3 +164,27 @@ Check Bunny Dashboard:
 - if CDN/HLS token protection is enabled, playlist and segment files must be authorized too.
 
 The app supports signed embed URLs. When `BUNNY_STREAM_EMBED_TOKEN_KEY` is present, player URLs include `token` and `expires`.
+
+## Safari-Specific Bunny 403
+
+If Chrome plays the Bunny embed but Safari shows:
+
+```text
+Failed to load resource: playlist.m3u8 403
+Failed to load resource: thumbnail.jpg 403
+Fetch API cannot load https://edgezone-*.bunnyinfra.net/500b.jpg due to access control checks
+```
+
+separate the symptoms:
+
+- `edgezone-*.bunnyinfra.net/500b.jpg` is Bunny player/edge measurement noise and is not the main playback blocker;
+- `playlist.m3u8 403` and `thumbnail.jpg 403` mean Bunny CDN rejected the actual video resources.
+
+For a demo/MVP, the safest fix is to loosen Bunny Stream Security:
+
+- clear or temporarily disable Allowed domains, or make sure it contains the exact Railway domain without `https://`;
+- disable Block Direct URL File Access for the demo if it is enabled;
+- disable CDN/HLS token protection unless the app signs the playlist and segment URLs with path-style tokens;
+- if Embed View Token Authentication is enabled, make sure `BUNNY_STREAM_EMBED_TOKEN_KEY` is present and correct, but remember this signs the iframe view, not necessarily every HLS segment.
+
+Safari is stricter around cross-site iframes/media requests, so referrer/cookie/token based restrictions can fail there even when Chrome appears to work.

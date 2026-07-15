@@ -73,3 +73,5 @@ gunicorn projectConfig.wsgi:application --bind 0.0.0.0:$PORT
 - в Stream > Security > Allowed domains добавлен домен Railway без схемы: `web-production-bf9de6.up.railway.app`, а не `https://web-production-bf9de6.up.railway.app`;
 - если включена Embed View Token Authentication, в Railway задан `BUNNY_STREAM_EMBED_TOKEN_KEY` из Bunny Security;
 - если включена защита HLS/CDN token, сегменты видео тоже должны быть доступны для Bunny Player.
+
+Если Chrome воспроизводит видео, а Safari показывает `playlist.m3u8 403`, это почти всегда означает, что Safari уперся в Bunny Security/CDN ограничения. Для демонстрации проще временно очистить Allowed domains, отключить Block Direct URL File Access и не включать HLS/CDN token protection.

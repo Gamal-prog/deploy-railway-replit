@@ -37,6 +37,7 @@ def _player_embed_url(video_id: str) -> str:
         "muted": "true",
         "preload": "true",
         "responsive": "true",
+        "playsinline": "true",
     }
 
     token_key = getattr(settings, "BUNNY_STREAM_EMBED_TOKEN_KEY", "")
