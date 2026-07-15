@@ -149,3 +149,18 @@ Always add:
 - Postgres support via `DATABASE_URL` and Railway `PG*` variables.
 
 This removes most of the guesswork from Railway deploys.
+
+## Bunny Stream Playback Checklist
+
+If Bunny metadata appears on the page but the player stays at `0:00`, do not switch to a full API key first.
+
+`BUNNY_STREAM_API_KEY` / Read-Only AccessKey is used only by Django for `GET /library/{libraryId}/videos/{videoId}`. If title and description are visible, that request already works. The iframe playback is controlled by Bunny Stream processing and Security settings.
+
+Check Bunny Dashboard:
+
+- the video is fully processed: `encodeProgress=100`, duration is greater than 0, and `availableResolutions` is not empty;
+- Stream > Security > Allowed domains contains the Railway domain without scheme: `web-production-bf9de6.up.railway.app`, not `https://web-production-bf9de6.up.railway.app`;
+- if Embed View Token Authentication is enabled, set `BUNNY_STREAM_EMBED_TOKEN_KEY` on Railway using the Bunny token security key;
+- if CDN/HLS token protection is enabled, playlist and segment files must be authorized too.
+
+The app supports signed embed URLs. When `BUNNY_STREAM_EMBED_TOKEN_KEY` is present, player URLs include `token` and `expires`.

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
+import time
 from dataclasses import dataclass
+from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -28,10 +31,24 @@ class BunnyAPIError(Exception):
 
 
 def _player_embed_url(video_id: str) -> str:
+    query = {
+        "autoplay": "true",
+        "loop": "false",
+        "muted": "true",
+        "preload": "true",
+        "responsive": "true",
+    }
+
+    token_key = getattr(settings, "BUNNY_STREAM_EMBED_TOKEN_KEY", "")
+    if token_key:
+        expires = int(time.time()) + settings.BUNNY_STREAM_EMBED_TOKEN_TTL
+        token_source = f"{token_key}{video_id}{expires}".encode("utf-8")
+        query["token"] = hashlib.sha256(token_source).hexdigest()
+        query["expires"] = str(expires)
+
     return (
         f"https://player.mediadelivery.net/embed/"
-        f"{settings.BUNNY_STREAM_LIBRARY_ID}/{video_id}"
-        "?autoplay=true&loop=false&muted=true&preload=true&responsive=true"
+        f"{settings.BUNNY_STREAM_LIBRARY_ID}/{video_id}?{urlencode(query)}"
     )
 
 
@@ -43,6 +60,53 @@ def _duration_label(seconds: int | None) -> str:
     if hours:
         return f"{hours:02d}:{minutes:02d}:{sec:02d}"
     return f"{minutes:02d}:{sec:02d}"
+
+
+def _as_int(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _playback_diagnostics(payload: dict) -> str:
+    if not payload:
+        return ""
+
+    notes = []
+    length = _as_int(payload.get("length"))
+    encode_progress = _as_int(payload.get("encodeProgress"))
+    available_resolutions = str(payload.get("availableResolutions") or "").strip()
+    status = payload.get("status")
+
+    if length is not None and length <= 0:
+        notes.append("длительность в Bunny API равна 0")
+
+    if encode_progress is not None and encode_progress < 100:
+        notes.append(f"кодирование завершено на {encode_progress}%")
+
+    if not available_resolutions:
+        notes.append("нет доступных разрешений")
+
+    if payload.get("isPublic") is False:
+        notes.append("видео отмечено как непубличное")
+
+    transcoding_messages = payload.get("transcodingMessages") or []
+    if transcoding_messages:
+        last_message = transcoding_messages[-1] or {}
+        message = last_message.get("message") or last_message.get("issueCode")
+        if message:
+            notes.append(f"последнее сообщение транскодинга: {message}")
+
+    if not notes:
+        return ""
+
+    facts = [
+        f"status={status}",
+        f"encodeProgress={encode_progress if encode_progress is not None else 'unknown'}",
+        f"availableResolutions={available_resolutions or 'none'}",
+    ]
+    return "\n\nДиагностика Bunny: " + "; ".join(notes) + ". (" + ", ".join(facts) + ")"
 
 
 def _fetch_video(video_id: str) -> dict:
@@ -90,9 +154,12 @@ def get_video_data(video_id: str) -> BunnyVideoData:
     description = payload.get("description") or "Описание видео будет получено из Bunny Stream."
     length = payload.get("length")
     thumbnail_url = payload.get("thumbnailUrl") or ""
+    duration = _duration_label(length)
 
-    if length is not None:
-        description = f"{description}\n\nДлительность: {_duration_label(length)}"
+    if duration:
+        description = f"{description}\n\nДлительность: {duration}"
+
+    description = f"{description}{_playback_diagnostics(payload)}"
 
     return BunnyVideoData(
         guid=guid,

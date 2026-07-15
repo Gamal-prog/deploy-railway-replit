@@ -36,6 +36,7 @@ python manage.py runserver
    - `DJANGO_ALLOWED_HOSTS=.up.railway.app,.railway.app`
    - `CSRF_TRUSTED_ORIGINS=https://*.up.railway.app,https://*.railway.app`
    - `BUNNY_STREAM_API_KEY` или `BUNNY_API_KEY`
+   - `BUNNY_STREAM_EMBED_TOKEN_KEY`, только если в Bunny Stream включена защита Embed View Token Authentication
    - `DJANGO_SUPERUSER_USERNAME`
    - `DJANGO_SUPERUSER_PASSWORD`
    - `DJANGO_SUPERUSER_EMAIL`
@@ -61,3 +62,14 @@ gunicorn projectConfig.wsgi:application --bind 0.0.0.0:$PORT
 ```
 
 Видео не проксируются через Django: в админке хранится Bunny video ID, Django получает метаданные через Bunny Stream API, а браузер пользователя загружает плеер напрямую с Bunny.
+
+## Bunny playback
+
+`BUNNY_STREAM_API_KEY` используется только сервером Django для запроса метаданных видео. Если название и описание видео отображаются, этот ключ уже работает; полный API Key вместо Read-Only обычно не влияет на воспроизведение iframe.
+
+Если Bunny Player открывается, но видео не стартует, проверьте в Bunny Dashboard:
+
+- видео полностью обработано: `encodeProgress=100`, длительность больше 0, есть `availableResolutions`;
+- в Stream > Security > Allowed domains добавлен домен Railway без схемы: `web-production-bf9de6.up.railway.app`, а не `https://web-production-bf9de6.up.railway.app`;
+- если включена Embed View Token Authentication, в Railway задан `BUNNY_STREAM_EMBED_TOKEN_KEY` из Bunny Security;
+- если включена защита HLS/CDN token, сегменты видео тоже должны быть доступны для Bunny Player.
