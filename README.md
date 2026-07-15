@@ -35,7 +35,7 @@ python manage.py runserver
    - `DEBUG=False`
    - `DJANGO_ALLOWED_HOSTS=.up.railway.app,.railway.app`
    - `CSRF_TRUSTED_ORIGINS=https://*.up.railway.app,https://*.railway.app`
-   - `BUNNY_STREAM_API_KEY`
+   - `BUNNY_STREAM_API_KEY` или `BUNNY_API_KEY`
    - `DJANGO_SUPERUSER_USERNAME`
    - `DJANGO_SUPERUSER_PASSWORD`
    - `DJANGO_SUPERUSER_EMAIL`

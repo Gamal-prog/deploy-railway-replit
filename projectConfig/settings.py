@@ -22,6 +22,14 @@ def env_list(name, default=""):
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+def first_env(*names, default=""):
+    for name in names:
+        value = os.environ.get(name)
+        if value:
+            return value.strip()
+    return default
+
+
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
     "django-insecure-demo-key-for-local-and-mvp-hosting",
@@ -150,5 +158,14 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 BUNNY_STREAM_LIBRARY_ID = 703470
-BUNNY_STREAM_API_KEY = os.environ.get("BUNNY_STREAM_API_KEY", "")
+BUNNY_STREAM_API_KEY = first_env(
+    "BUNNY_STREAM_API_KEY",
+    "BUNNY_STREAM_ACCESS_KEY",
+    "BUNNY_STREAM_API_READ_ONLY_KEY",
+    "BUNNY_API_KEY",
+    "BUNNY_ACCESS_KEY",
+    "BUNNY_API_READ_ONLY_KEY",
+    "API_READ_ONLY_KEY",
+    "API-Read-Only",
+)
 BUNNY_STREAM_API_TIMEOUT = int(os.environ.get("BUNNY_STREAM_API_TIMEOUT", "8"))

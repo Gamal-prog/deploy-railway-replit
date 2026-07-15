@@ -48,7 +48,10 @@ def _duration_label(seconds: int | None) -> str:
 def _fetch_video(video_id: str) -> dict:
     access_key = settings.BUNNY_STREAM_API_KEY
     if not access_key:
-        raise BunnyAPIError("BUNNY_STREAM_API_KEY is not configured")
+        raise BunnyAPIError(
+            "Bunny API key is not configured. Set BUNNY_STREAM_API_KEY "
+            "or BUNNY_API_KEY on the Railway web service."
+        )
 
     url = (
         f"https://video.bunnycdn.com/library/"
